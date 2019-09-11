@@ -9,11 +9,13 @@ public class PlayerController : MonoBehaviour {
     public GameObject inventory, exclamation, pressEnter, blur;
     public InventoryNavigation inventoryNavigationScript;
     public ScreenManager screenManagerScript;
-    public Sprite gameOverImg1, gameOverImg2;
+
+    public Sprite gameOverImg1, gameOverImg2, pauseImg, quitImg;
+    public RuntimeAnimatorController animGameOver, animGameOver2;
 
     Rigidbody2D rb;
     Animator anim, exclamationAnim;
-    bool isMoving, canMove, inventoryOn;
+    bool isMoving, canMove, inventoryOn, pauseOn;
     SpriteRenderer sRender;
    
     void Start () {
@@ -23,29 +25,47 @@ public class PlayerController : MonoBehaviour {
         anim = GetComponent<Animator>();
         sRender = GetComponent<SpriteRenderer>();
         inventoryOn = false;
+        pauseOn = false;
         canMove = true;
     }
 	
 	void FixedUpdate () {
        
-        if(!inventory.activeSelf && !anim.GetBool("isDead"))
+        if(!inventory.activeSelf && !anim.GetBool("isDead") && !pauseOn)
             Move();
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            print("Escape");
+            TogglePause();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && !anim.GetBool("isDead") && !pauseOn)
             ToggleInventory();
 
         if (anim.GetBool("isDead"))
         {
             if (Utils.AnimationIsFinished(anim))
             {
-                Color color = new Color();
-                screenManagerScript.ShowScreen(gameOverImg1, gameOverImg2, color);
+                Color color = new Color(255, 0, 0, 0.5f);
+                screenManagerScript.ShowScreen(gameOverImg1, animGameOver, gameOverImg2, animGameOver2, color);
             }
         }
     }
-
+    public void TogglePause()
+    {
+        pauseOn = !pauseOn;
+        print("Escape bool "+ pauseOn);
+        if (pauseOn)
+        {
+            Color color = new Color(255, 255, 255, 0.5f);
+            screenManagerScript.ShowScreen(pauseImg, null, quitImg, null, color);
+        }
+        else
+            screenManagerScript.HideScreen();
+    }
     public void ToggleInventory()
     {
         anim.SetBool("isMoving", false);

@@ -5,9 +5,23 @@ using UnityEngine;
 
 public class ResetGame : MonoBehaviour
 {
-    public void Reset()
+    private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space) && gameObject.activeSelf)
+            ResetQuit();
+    }
 
-        //SceneManager.LoadScene("Start");
+    public void ResetQuit()
+    {
+        if (transform.parent.GetChild(0).GetComponent<Animator>().runtimeAnimatorController != null){
+            SceneManager.LoadScene("Start");
+            this.gameObject.SetActive(false);
+            this.enabled = false;
+        }
+        else
+        {
+            print("exit game");
+            Application.Quit();
+        }
     }
 }
